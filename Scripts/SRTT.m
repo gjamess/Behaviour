@@ -1,12 +1,12 @@
 %%
-subjectNumber = '104' ; %set for each subject
+subjectNumber = '126' ; %set for each subject
 % import variables
 %%
 %A C E I M N 
 [BlockType,ResponseRq,BlocksthisTrialN,...
 trialsthisTrialN,Respcorr,Resprt] = ...
 explicitTaskImport(...
-'104_Seq_explicitJitter_2017_Jul_24_1657.csv'...
+'126_Seq_explicitJitter_2017_Aug_14_1736.csv'...
 );
 
 %%
@@ -16,15 +16,15 @@ trialN = trialsthisTrialN + 1 ;
 trialRTMat = nan(max(trialN),max(blockNumber)); %creating empty matrix of nan of trials x blocks
 accuracyMat = nan(max(trialN),max(blockNumber)); %EmptyMatrix = nan(rows,columns)
 %%
-%(Resolves issue where Respcorr = 0 for all)
-respcorr = nan(1152,1)
-for i = 1:1152
-    if Respkeys(i,:) == ResponseRq(i,:)
-    respcorr(i,1) = 1 ;
-    else respcorr(i,1) = 0
-    end
-end
-Respcorr = respcorr
+% %(Resolves issue where Respcorr = 0 for all)
+% respcorr = nan(1152,1)
+% for i = 1:1152
+%    if Respkeys(i,:) == ResponseRq(i,:)
+%       respcorr(i,1) = 1 ;
+%    else respcorr(i,1) = 0
+%    end
+% end
+% Respcorr = respcorr
 %%
 
 for i = 1:max(blockNumber) %sets i to equal numbers 1 through 15
@@ -36,7 +36,11 @@ for i = 1:max(blockNumber) %sets i to equal numbers 1 through 15
     respRqMat(:,i) = ResponseRq(ind);
 end
 %%
-filteredRTMat = filterMat(trialRTMat,accuracyMat);
+minmaxMat = trialRTMat<0.8 & trialRTMat>0.1;
+%%
+filtRTMat = filterMat(trialRTMat,accuracyMat);
+%%
+filteredRTMat = filterMat(trialRTMat,minmaxMat);
 %%
 blockmeanRT = nanmean(trialRTMat);
 accuracymean = nanmean(accuracyMat);
@@ -74,6 +78,14 @@ ylabel('Filtered Median RT')
 %%
 print(strcat('SRTT Block Median Learning Curve',subjectNumber),'-dpng');
 %%
+%% %Plot Mean Block RT Learning Curve
+figure
+hold on
+plot ([filteredMeanRT],'-*');
+set(gca,'XTick',1:18,'XTickLabel',BlockType);
+xlabel('Block Type')
+ylabel('Filtered Mean RT')
+%%
 %Learning metric
 %% Last 2 R blocks - Last 2 S blocks
 Learning = mean(filteredMedianRT(:,[16 18]))-...
@@ -94,7 +106,7 @@ SeqBlocks = filteredMedianRT(:,[2:5 7:10 12:15 17]);
 figure
 plot(SeqBlocks,'-*')
 set(gca,'XTick',1:13);
-%% Exponential fit to sequence (how to save output?)
+%% Exponential fit to sequence
 SeqFit = coeffvalues(createFit(SeqBlocks))
 xlabel ('Sequence Blocks')
 %%
@@ -263,6 +275,8 @@ hold on
 errorbar(x,y,EMLR,'.b','linewidth',1.2,'color',[0 0 0])
 set(gca,'linewidth',2)
 ylabel('Chunk Similarity (r)')
+%%
+print(strcat('SRTT Chunking Matrix',subjectNumber),'-dpng');
 %%
 %%Compare the difference of each block with the previous block, and each
 %%block with the rest of the blocks excluding the prev block

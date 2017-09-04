@@ -4,9 +4,9 @@
 %A Categorical -->String
 %Output as Column Vectors
 %%
-subjectNumber = '101';
+subjectNumber = '126';
 %%
-filename = '101_ActionSelection_2017_Jul_19_1113.csv';
+filename = '126_ActionSelection_2017_Aug_14_1722.csv';
 %%
 %Importing file
 [blocktype,blockloopthisTrialN,trialsthisN,trialRespkeys,trialRespcorr,trialResprt] = AS_Import(filename);
@@ -27,7 +27,11 @@ for i = 1:6 %sets i to equal numbers 1 through 6 (no. blocks)
     accuracyMat(:,i) = trialRespcorr(blockNumber == i); %Creates accuracy matrix using above 
 end
 %%
-filteredRTMat = filterMat(trialRTMat,accuracyMat); %**Need to filter extreme values**
+minmaxMat = trialRTMat< 0.8; %filter extreme values
+%%
+filtRTMat = filterMat(trialRTMat,accuracyMat);
+filteredRTMat = filterMat(filtRTMat,minmaxMat);
+%%
 %%
 blockmeanRT = nanmean(trialRTMat);
 accuracymean = nanmean(accuracyMat);
@@ -112,3 +116,4 @@ fileName2 = strcat('subjStruct_',subjectNumber,'AS');
 %%
 save(fileName);
 save(fileName2,'subjStruct');
+%%

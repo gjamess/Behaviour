@@ -4,9 +4,10 @@
 %A Categorical -->String
 %Output as Column Vectors
 %%
-subjectNumber = '126';
+subjectNumber = '101';
 %%
-filename = '126_ActionSelection_2017_Aug_14_1722.csv';
+filename = ...
+'101_ActionSelection_2017_Jul_19_1113.csv' ;
 %%
 %Importing file
 [blocktype,blockloopthisTrialN,trialsthisN,trialRespkeys,trialRespcorr,trialResprt] = AS_Import(filename);
@@ -27,7 +28,7 @@ for i = 1:6 %sets i to equal numbers 1 through 6 (no. blocks)
     accuracyMat(:,i) = trialRespcorr(blockNumber == i); %Creates accuracy matrix using above 
 end
 %%
-minmaxMat = trialRTMat< 0.8; %filter extreme values
+minmaxMat = trialRTMat<0.8 & trialRTMat>0.1; %filter extreme values
 %%
 filtRTMat = filterMat(trialRTMat,accuracyMat);
 filteredRTMat = filterMat(filtRTMat,minmaxMat);
@@ -90,6 +91,9 @@ set(gca,'linewidth',2) ;
 ylabel('Block Accuracy') ;
 xlabel('Block Type') ;
 %%
+SelectBlocksAccuracy = accuracymean(blkInd == 1);
+ExecuteBlocksAccuracy = accuracymean(blkInd == 0);
+%% 
 SAccuracy = mean(accuracymean(blkInd == 1));
 EAccuracy = mean(accuracymean(blkInd == 0));
 
@@ -100,6 +104,10 @@ bar(c,Accuracyplot);
 ylabel('Accuracy')
 %%
 print(strcat('AS Accuracy plot',subjectNumber),'-dpng');
+%%
+disp('++++');
+disp(min(accuracymean))
+disp('++++');
 %%
 subjStruct = struct;
 subjStruct.subjNumber = subjectNumber;

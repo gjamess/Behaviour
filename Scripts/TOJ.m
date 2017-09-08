@@ -1,11 +1,11 @@
-subjectNumber = '117'
+subjectNumber = '126'
 %%
 %Import data (H J K L M, column vectors, L = Text, gen func)
 %filename = strcat(subjectNumber,'1*_2.csv');
-filename = '1171_2017_Aug_01_0952_2_trialout.csv'
+filename = '1261_2017_Aug_14_1754_2_trialout.csv'
 %%
 %Importing file
-[driver_offset,order,rt,FootPress,correct] = TOJImport(filename)
+%[driver_offset,order,rt,FootPress,correct] = TOJImport(filename)
 %%
 %Importing file 2 
 %Column vectors, acc --> text, drop down headers)
@@ -16,7 +16,7 @@ order=trailNum
 driver_offset=stimOffset
 FootPress=acc
 %% %for subj101 since footpedals were reversed
-% driver_offset = driver_offset*-1
+%driver_offset = driver_offset*-1
 %%
 [C, ~,indC]  = unique(driver_offset);
 %C = unique driver offsets
@@ -43,7 +43,7 @@ figure
 plot(propRFoot,'o')
 %%
 sigfunc = @(A, x)( 1 ./ (1 + exp(-1.*(x-A(1))./A(2))));
-A0 = [2 1];
+A0 = [1 1];
 %%
 C
 %x2 = linspace(C,C,14);
@@ -66,7 +66,14 @@ print(strcat('TOJ',subjectNumber),'-dpng');
 subjModFitParams = struct
 subjModFitParams.Rsquared = A_fit.Rsquared;
 subjModFitParams.Coefs = A_fit.Coefficients.Estimate;
+try 
+    
 subjModFitParams.Threshold = [interp1(predY,xs,.25) interp1(predY,xs,.75)];
+catch
+    [vs,inds] = unique(predY,'stable');
+    xsS = xs(inds);
+subjModFitParams.Threshold = [interp1(vs,xsS,.25) interp1(vs,xsS,.75)];
+end
 subjModFitParams.Slope = subjModFitParams.Coefs(2);
 subjModFitParams.JND = sum(abs(subjModFitParams.Threshold))/2;
 subjModFitParams.propRFootResponses = propRFoot;
